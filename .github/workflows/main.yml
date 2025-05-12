@@ -35,10 +35,10 @@ jobs:
         run: npm install -g @datadog/datadog-ci
 
       - name: Run Cypress with system usage tracking
+        continue-on-error: true
         run: |
           echo "Running Cypress and capturing resource usage..."
           /usr/bin/time -v npx cypress run --browser chrome 2> time.log || true
-          continue-on-error: true
 
       - name: Capture CPU/Memory metrics from time output
         run: |
