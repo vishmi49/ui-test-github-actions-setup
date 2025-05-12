@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Checkout
+      - name: Checkout branch
         uses: actions/checkout@v4
 
       - name: Cypress run in Chrome
