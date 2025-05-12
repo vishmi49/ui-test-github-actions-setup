@@ -15,7 +15,7 @@ jobs:
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       DD_ENV: ci
       DD_SERVICE: cypress-tests
-      DD_SITE: app.datadoghq.eu
+      DD_SITE: datadoghq.eu
       DD_CIVISIBILITY_AGENTLESS_ENABLED: "true"
       DD_LOGS_INJECTION: "true"
 
@@ -34,11 +34,21 @@ jobs:
       - name: Install Datadog CLI
         run: npm install -g @datadog/datadog-ci
 
+      - name: Instrument with Datadog CI Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: js
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          site: app.datadoghq.eu
+
       - name: Run Cypress with system usage tracking
         continue-on-error: true
         run: |
-          echo "Running Cypress and capturing resource usage..."
-          /usr/bin/time -v npx cypress run --browser chrome 2> time.log || true
+          echo "Running Cypress with JUnit reporter..."
+          /usr/bin/time -v npx cypress run \
+            --reporter junit \
+            --reporter-options "mochaFile=cypress/results/test-results-[hash].xml" \
+            --browser chrome 2> time.log || true
 
       - name: Capture CPU/Memory metrics from time output
         run: |
@@ -48,22 +58,28 @@ jobs:
           echo "CPU Time: $CPU_TIME"
           echo "Max Memory: $MAX_MEM KB"
 
-          # Convert memory to MB
           MAX_MEM_MB=$((MAX_MEM / 1024))
 
-          # Send custom metrics to Datadog
           datadog-ci metric send --apiKey ${DATADOG_API_KEY} --site ${DD_SITE} \
             --type gauge \
             --points "[[ $(date +%s), $CPU_TIME ]]" \
             --metric "ci.cypress.cpu_time" \
-            --tags "env:ci,service:cypress-tests"
+            --tags "env:ci,service:cypress-tests,step:run"
 
           datadog-ci metric send --apiKey ${DATADOG_API_KEY} --site ${DD_SITE} \
             --type gauge \
             --points "[[ $(date +%s), $MAX_MEM_MB ]]" \
             --metric "ci.cypress.max_memory_mb" \
-            --tags "env:ci,service:cypress-tests"
+            --tags "env:ci,service:cypress-tests,step:run"
         shell: bash
+
+      - name: Upload JUnit test results to Datadog
+        if: always()
+        uses: datadog/junit-upload-github-action@v2
+        with:
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          files: cypress/results
+          tags: github.workflow:${{ github.workflow }},env:ci
 
       - name: Merge Mochawesome reports
         run: npx mochawesome-merge cypress/results/*.json > cypress/results/merged-reports.json
