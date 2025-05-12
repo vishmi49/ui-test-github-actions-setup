@@ -45,7 +45,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Running Cypress with JUnit reporter..."
-          /usr/bin/time -v npx cypress run \
+          /usr/bin/time -v npm run test:gha \
             --reporter junit \
             --reporter-options "mochaFile=cypress/results/test-results-[hash].xml" \
             --browser chrome 2> time.log || true
