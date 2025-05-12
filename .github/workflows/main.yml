@@ -36,8 +36,9 @@ jobs:
 
       - name: Run Cypress with system usage tracking
         run: |
-          /usr/bin/time -v npx cypress run --browser chrome || true
-        continue-on-error: true
+          echo "Running Cypress and capturing resource usage..."
+          /usr/bin/time -v npx cypress run --browser chrome 2> time.log || true
+          continue-on-error: true
 
       - name: Capture CPU/Memory metrics from time output
         run: |
