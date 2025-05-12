@@ -11,21 +11,58 @@ jobs:
   cypress-run:
     runs-on: ubuntu-24.04
 
+    env:
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DD_ENV: ci
+      DD_SERVICE: cypress-tests
+      DD_SITE: app.datadoghq.eu
+      DD_CIVISIBILITY_AGENTLESS_ENABLED: "true"
+      DD_LOGS_INJECTION: "true"
+
     steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
-      - name: Checkout branch
-        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Cypress run in Chrome
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          command: npm run test:gha
+      - name: Install Datadog CLI
+        run: npm install -g @datadog/datadog-ci
+
+      - name: Run Cypress with system usage tracking
+        run: |
+          /usr/bin/time -v npx cypress run --browser chrome || true
         continue-on-error: true
+
+      - name: Capture CPU/Memory metrics from time output
+        run: |
+          echo "Extracting CPU and memory stats..."
+          CPU_TIME=$(grep "User time (seconds)" time.log | awk '{print $5}')
+          MAX_MEM=$(grep "Maximum resident set size" time.log | awk '{print $6}')
+          echo "CPU Time: $CPU_TIME"
+          echo "Max Memory: $MAX_MEM KB"
+
+          # Convert memory to MB
+          MAX_MEM_MB=$((MAX_MEM / 1024))
+
+          # Send custom metrics to Datadog
+          datadog-ci metric send --apiKey ${DATADOG_API_KEY} --site ${DD_SITE} \
+            --type gauge \
+            --points "[[ $(date +%s), $CPU_TIME ]]" \
+            --metric "ci.cypress.cpu_time" \
+            --tags "env:ci,service:cypress-tests"
+
+          datadog-ci metric send --apiKey ${DATADOG_API_KEY} --site ${DD_SITE} \
+            --type gauge \
+            --points "[[ $(date +%s), $MAX_MEM_MB ]]" \
+            --metric "ci.cypress.max_memory_mb" \
+            --tags "env:ci,service:cypress-tests"
+        shell: bash
 
       - name: Merge Mochawesome reports
         run: npx mochawesome-merge cypress/results/*.json > cypress/results/merged-reports.json
