@@ -25,10 +25,10 @@ jobs:
           sudo apt-get purge google-chrome-stable -y || true
           sudo apt-get autoremove -y
 
-      - name: Install Chrome 134
+      - name: Install Chrome 120
         run: |
-          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_134.0.0.0-1_amd64.deb
-          sudo apt install ./google-chrome-stable_134.0.0.0-1_amd64.deb
+          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_120.0.6099.71-1_amd64.deb
+          sudo apt install ./google-chrome-stable_120.0.6099.71-1_amd64.deb
           google-chrome --version
 
       - name: Cypress run in Chrome
