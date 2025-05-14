@@ -88,7 +88,7 @@ class ProductDetailsPage {
   }
 
   getSortByDropdown() {
-    return cy.get("#sorter");
+    return cy.get("select.sorter-options").eq(0);
   }
 
   getSearchBox() {

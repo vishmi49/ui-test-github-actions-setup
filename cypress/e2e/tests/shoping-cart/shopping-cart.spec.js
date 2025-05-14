@@ -79,8 +79,8 @@ describe("Shopping Cart", () => {
     shoppingCartPage.getPageTitle().should("contain", "Shopping Cart");
     shoppingCartPage.getCartItemQuantityInput().clear().type("2");
     shoppingCartPage.getCartItemQuantityInput().should("have.value", quantity);
-    shoppingCartPage.getUpdateShoppingCartButton().click();
-
+    shoppingCartPage.getUpdateShoppingCartButton().click({ force: true });
+    cy.wait(5000);
     shoppingCartPage
       .getSingleProductPrice()
       .invoke("text")

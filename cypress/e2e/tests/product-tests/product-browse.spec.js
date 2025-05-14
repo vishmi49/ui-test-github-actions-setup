@@ -31,7 +31,7 @@ describe("Product Details Page", () => {
     productDetailsPage.visit();
     productDetailsPage.getPageTitle().should("contain", "Jackets");
     productDetailsPage.getPriceFilter();
-    productDetailsPage.getPriceRange().click({ force: true });
+    productDetailsPage.getPriceRange().click();
     cy.url().should("include", "price");
 
     productDetailsPage.getNumberOfProductItems().then(($productItems) => {
@@ -49,9 +49,11 @@ describe("Product Details Page", () => {
   it("should sort products by product name", () => {
     productDetailsPage.visit();
     productDetailsPage.getPageTitle().should("contain", "Jackets");
-    productDetailsPage.getSortByDropdown().select("Product Name");
-    cy.wait(10000);
-
+    productDetailsPage
+      .getSortByDropdown()
+      .select("Product Name")
+      .should("have.value", "name");
+    cy.wait(5000);
     const titlesArray = [];
 
     productDetailsPage
