@@ -6,7 +6,10 @@
     "test": "cypress run --spec **/*.spec.js",
     "test:headless": "cypress run --headless",
     "test:gha": "npx cypress run --spec **/product-tests/*.spec.js --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/reports",
-    "test:cci": "npx cypress run --spec **/product-tests/*.spec.js --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/reports"
+    "test:cci": "npx cypress run --spec **/product-tests/*.spec.js --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/reports",
+    "delete:reportFolderHTML": "rm - rf cypress/reports/html",
+    "merge:reports": "npx mochawesome-merge cypress/results/*.json > cypress/results/merged-reports.json",
+    "report:html": "npx marge cypress/results/merged-reports.json --reportDir cypress/results -f 'test-report.html'"
   },
   "author": "",
   "license": "ISC",

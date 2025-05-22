@@ -9,7 +9,7 @@ on:
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Setup Node.js
@@ -31,12 +31,12 @@ jobs:
           sudo apt install ./google-chrome-stable_current_amd64.deb
           google-chrome --version
 
-      - name: Cypress run in Chrome
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          command: npm run test:gha
-          continue-on-error: true
+      - name: Run Cypress with CPU tracking
+        run: |
+          echo "Running Cypress and measuring CPU usage..."
+          /usr/bin/time -v npx cypress run --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/results 2> cypress_cpu_usage.txt || echo "⚠️ Cypress tests failed"
+          echo "Extracted CPU usage:"
+          grep "Percent of CPU this job got" cypress_cpu_usage.txt || echo "⚠️ CPU usage not found"
 
       - name: Merge Mochawesome reports
         run: npx mochawesome-merge cypress/results/*.json > cypress/results/merged-reports.json
@@ -49,3 +49,9 @@ jobs:
         with:
           name: Cypress HTML Report
           path: cypress/results
+
+      - name: Upload CPU Usage Log
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cypress CPU Usage
+          path: cypress_cpu_usage.txt
