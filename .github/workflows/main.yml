@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Cypress UI Tests
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       - name: Run Cypress with CPU tracking
         run: |
           echo "Running Cypress and measuring CPU usage..."
-          /usr/bin/time -v npx cypress run --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/results 2> cypress_cpu_usage.txt || echo "⚠️ Cypress tests failed"
+          /usr/bin/time -v npm test:gha --browser chrome --reporter mochawesome --reporter-options reportDir=cypress/results 2> cypress_cpu_usage.txt || echo "⚠️ Cypress tests failed"
           echo "Extracted CPU usage:"
           grep "Percent of CPU this job got" cypress_cpu_usage.txt || echo "⚠️ CPU usage not found"
 
