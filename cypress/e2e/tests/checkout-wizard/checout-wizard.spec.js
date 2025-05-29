@@ -1,6 +1,7 @@
 import CheckoutWizardPage from "../../../pages/checkout-wizard/checkout-wizard-page";
 import ShoppingCartPage from "../../../pages/shoping-cart/shopping-cart-page";
 
+//Checkout Wizard Test cases
 describe("Checkout Wizard", () => {
   const shoppingCartPage = new ShoppingCartPage();
   const checkoutWizardPage = new CheckoutWizardPage();
