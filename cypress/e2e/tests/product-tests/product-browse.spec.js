@@ -2,6 +2,7 @@ import ProductsMenuPage from "../../../pages/products/products-menu-page";
 import ProductDetailsPage from "../../../pages/products/product-details-page";
 import { should } from "chai";
 
+// Products Details Page Test cases
 describe("Product Details Page", () => {
   const productsMenuPage = new ProductsMenuPage();
   const productDetailsPage = new ProductDetailsPage();
