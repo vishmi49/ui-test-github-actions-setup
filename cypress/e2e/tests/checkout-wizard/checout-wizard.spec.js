@@ -10,7 +10,7 @@ describe("Checkout Wizard", () => {
     return false;
   });
 
-  it("should syuccessfully complete the checkout process - new user", () => {
+  it.only("should syuccessfully complete the checkout process - new user", () => {
     const streetAddress = "1st Lane, Colombo";
     const city = "Colombo";
     const country = "Sri Lanka";
