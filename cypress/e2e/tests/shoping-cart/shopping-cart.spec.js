@@ -3,6 +3,7 @@ import ShoppingCartPage from "../../../pages/shoping-cart/shopping-cart-page";
 import SingleProductDetailsPage from "../../../pages/products/single-product-details-page";
 import EditShoppingCartPage from "../../../pages/shoping-cart/edit-shopping-cart-page";
 
+// shopping cart test cases
 describe("Shopping Cart", () => {
   const productDetailsPage = new ProductDetailsPage();
   const shoppingCartPage = new ShoppingCartPage();
