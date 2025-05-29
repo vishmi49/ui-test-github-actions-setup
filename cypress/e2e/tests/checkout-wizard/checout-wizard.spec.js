@@ -58,10 +58,8 @@ describe("Checkout Wizard", () => {
     shoppingCartPage.visitCartPage();
     shoppingCartPage.getPageTitle().should("contain", "Shopping Cart");
     shoppingCartPage.getOrderTotal().should("be.visible");
-    shoppingCartPage
-      .getProceedToCheckoutButton()
-      .should("be.visible")
-      .click({ force: true }, { timeout: 30000 });
+    shoppingCartPage.getProceedToCheckoutButton().should("be.visible").click();
+    cy.wait(5000);
     cy.url().should("include", "/checkout/#shipping");
     checkoutWizardPage
       .getShippingPageTitle()

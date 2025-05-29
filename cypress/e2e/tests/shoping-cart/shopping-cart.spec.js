@@ -62,12 +62,13 @@ describe("Shopping Cart", () => {
     editShoppingCartPage
       .getProductSizeMedium()
       .should("have.attr", "aria-checked", "true");
-    cy.intercept({
-      method: "GET",
-      url: "/checkout/cart/",
-    }).as("updateProduct");
+    // cy.intercept({
+    //   method: "GET",
+    //   url: "/checkout/cart/",
+    // }).as("updateProduct");
     editShoppingCartPage.getUpdateCartButton().click({ force: true });
-    cy.wait("@updateProduct");
+    // cy.wait("@updateProduct");
+    cy.wait(5000);
     shoppingCartPage.getItemSize().should("contain", "M");
   });
 

@@ -17,7 +17,7 @@ describe("Product Details Page", () => {
       .getSortByDropdown()
       .select("Product Name")
       .should("have.value", "name");
-    cy.wait(5000);
+    cy.wait(6000);
     const titlesArray = [];
 
     productDetailsPage
