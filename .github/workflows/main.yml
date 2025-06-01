@@ -39,11 +39,42 @@ jobs:
           npx cypress run \
             --browser chrome \
             --reporter mochawesome \
-            --reporter-options reportDir=cypress/results/chunk-${{ matrix.chunk }} \
-            --spec $(node scripts/spec_splitter.js ${{ matrix.chunk }} 3) || echo "⚠️ Tests failed"
+            --reporter-options "reportDir=cypress/results/chunk-${{ matrix.chunk }},overwrite=false,html=false,json=true" \
+            --spec "$(node scripts/spec_splitter.js ${{ matrix.chunk }} 3)" || echo "⚠️ Tests failed"
 
       - name: Upload Chunk Report
         uses: actions/upload-artifact@v4
         with:
           name: Cypress HTML Report Chunk ${{ matrix.chunk }}
           path: cypress/results/chunk-${{ matrix.chunk }}
+
+  merge-reports:
+    needs: cypress-run
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download all chunk reports
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-reports
+
+      - name: Combine all JSON reports
+        run: |
+          mkdir -p merged-results
+          npx mochawesome-merge "downloaded-reports/**/*.json" > merged-results/merged-report.json
+
+      - name: Generate HTML report
+        run: |
+          npx marge merged-results/merged-report.json --reportDir merged-results --reportFilename test-report.html
+
+      - name: Upload Final Merged Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cypress Final Merged HTML Report
+          path: merged-results
