@@ -39,7 +39,7 @@ jobs:
           npx cypress run \
             --browser chrome \
             --reporter mochawesome \
-            --reporter-options "reportDir=cypress/results/chunk-${{ matrix.chunk }},overwrite=false,html=false,json=true" \
+            --reporter-options reportDir="cypress/results/chunk-${{ matrix.chunk }}",overwrite=false,html=false,json=true \
             --spec "$(node scripts/spec_splitter.js ${{ matrix.chunk }} 3)" || echo "⚠️ Tests failed"
 
       - name: Upload Chunk Report
