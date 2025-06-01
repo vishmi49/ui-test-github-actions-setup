@@ -36,7 +36,7 @@ jobs:
       - name: Run Cypress Chunk ${{ matrix.chunk }}
         run: |
           echo "Running chunk ${{ matrix.chunk }}..."
-          npm test:gha \
+          npx cypress run \
             --browser chrome \
             --reporter mochawesome \
             --reporter-options reportDir=cypress/results/chunk-${{ matrix.chunk }} \
